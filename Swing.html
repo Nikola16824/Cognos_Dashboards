@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Copy Text Example</title>
+    <title>Python Code with Copy Button</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        textarea {
-            width: 100%;
-            height: 100px;
-            font-family: monospace;
-            font-size: 16px;
+        pre {
+            background-color: #f8f8f8;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow-x: auto;
         }
         button {
             margin-top: 10px;
@@ -24,23 +24,71 @@
     </style>
 </head>
 <body>
-    <h1>Copy Code Example</h1>
-    <textarea id="textToCopy" readonly>
+    <h1>Python Code Example</h1>
+    
+    <h2>Импортване на модули</h2>
+    <pre id="codeToCopy">
 import motor
-import runloop
+import runloop					
 import force_sensor
 from hub import port
-    </textarea>
-    <button onclick="copyText()">Copy Text</button>
+    </pre>
+    <button onclick="copyCode()">Копирай кода</button>
+
+    <h2>Обяснение</h2>
+    <p><strong>motor:</strong> Контролира мотора, свързан към портовете на микроконтролера.</p>
+    <p><strong>runloop:</strong> Осигурява функционалност за изпълнение на асинхронен код, като изпълнява задачи в цикъл.</p>
+    <p><strong>force_sensor:</strong> Осигурява функционалност за четене на входни данни от сензор за натиск.</p>
+    <p><strong>hub.port:</strong> Дава достъп до хардуерните портове на хъба.</p>
+
+    <h2>Функция за сензора за натиск</h2>
+    <pre>
+def is_force_sensor_pressed():
+    # Collect input from force sensor
+    return force_sensor.pressed(port.E)
+    </pre>
+    <p>Тази функция проверява дали сензорът за натиск е натиснат.</p>
+
+    <h2>Асинхронна основна функция</h2>
+    <pre>
+async def main():
+    while True:
+        # Wait until the force sensor is pressed
+        await runloop.until(is_force_sensor_pressed)
+    </pre>
+    <p>Това е главният цикъл, който се изпълнява безкрайно.</p>
+
+    <h2>Контрол на мотора</h2>
+    <pre>
+    # Run the motor in one direction while the force sensor is pressed
+    while is_force_sensor_pressed():
+        motor.run(port.A, 500)
+    </pre>
+    <p>Когато сензорът за натиск е натиснат, моторът започва да работи.</p>
+
+    <h2>Спиране на мотора</h2>
+    <pre>
+# Stop the motor when the force sensor is not pressed
+motor.stop(port.A)
+    </pre>
+    <p>Когато сензорът за натиск не е натиснат, моторът спира.</p>
+
+    <h2>Изпълнение на цикъла</h2>
+    <pre>
+runloop.run(main())
+    </pre>
+    <p>Това стартира изпълнението на главната функция в цикъл от събития.</p>
 
     <script>
-        function copyText() {
-            const textArea = document.getElementById("textToCopy");
-            textArea.select();
-            document.execCommand("copy");
-            alert("Text copied to clipboard!");
+        function copyCode() {
+            const codeArea = document.getElementById("codeToCopy");
+            const range = document.createRange();
+            range.selectNode(codeArea);
+            window.getSelection().removeAllRanges(); // Clear current selection
+            window.getSelection().addRange(range); // Select the code
+            document.execCommand("copy"); // Copy the selection
+            alert("Кодът е копиран в клипборда!");
         }
     </script>
 </body>
 </html>
-
